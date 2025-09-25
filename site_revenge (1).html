@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Revenge • Servidor Minecraft</title>
+  <meta name="description" content="Revenge - servidor Minecraft. IP: Revenge.net" />
+  <style>
+    :root{--accent:#8b1e6a;--dark:#0b0b0f;--muted:#9aa3b2}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#060606 0%,#0f0f12 100%);color:#e8eef6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:rgba(255,255,255,0.03);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ff6fb5);display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a, nav button{color:inherit;text-decoration:none;margin-left:18px;font-weight:600;background:none;border:none;cursor:pointer}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:8px;color:white;font-weight:700;cursor:pointer}
+    .btn.link{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+    .hero{padding:72px 28px;text-align:center}
+    .hero h1{font-size:40px;margin:0 0 12px}
+    .hero p{color:var(--muted);margin:0 0 18px}
+    .ip-card{display:inline-flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px 16px;border-radius:10px}
+    .section{padding:48px 28px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;text-align:center}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:14px}
+    .status{display:flex;gap:10px;align-items:center}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.online{background:#28c76f}
+    .dot.offline{background:#ff6b6b}
+    @media(min-width:900px){.hero h1{font-size:56px}}
+    .vip-img{width:80px;height:80px;border-radius:50%;margin-bottom:10px}
+
+    /* Modais */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+    .modal[open]{display:flex}
+    .modal-card{width:100%;max-width:520px;background:#111218;border:1px solid rgba(255,255,255,0.06);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.4)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .tabs{display:flex;gap:8px}
+    .tab{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#e8eef6;cursor:pointer}
+    .tab.active{background:var(--accent);border-color:transparent;color:#fff}
+    .modal-body{padding:18px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .row{display:flex;gap:8px;align-items:center}
+    .field input{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:#0c0d12;color:#e8eef6}
+    .helper{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:14px}
+    .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1)}
+    .userbox{display:flex;align-items:center;gap:10px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">R</div>
+      <div>
+        <div style="font-weight:800">Revenge</div>
+        <div style="font-size:12px;color:var(--muted)">Servidor Minecraft • Revenge.net</div>
+      </div>
+    </div>
+    <nav id="nav-auth">
+      <a href="#features">Recursos</a>
+      <a href="#regras">Regras</a>
+      <a href="#staff">Staff</a>
+      <a href="#loja">Loja</a>
+      <button onclick="openAuth('login')">Entrar</button>
+      <button class="btn" onclick="openAuth('register')">Registrar</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Revenge</h1>
+      <p>Servidor de minecraft com minigames, arenas e comunidade ativa. Conecte-se agora.</p>
+
+      <div class="ip-card" role="group" aria-label="IP do servidor">
+        <div style="font-weight:700">IP:</div>
+        <div id="server-ip">Revenge.net</div>
+        <button class="btn" style="margin-left:12px" onclick="copyIP()">Copiar IP</button>
+      </div>
+      <div style="margin-top:12px">
+        <a class="btn link" href="https://discord.gg/d4KPApPT6W" target="_blank" rel="noopener">Entrar no Discord</a>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:12px;justify-content:center" id="hero-cta">
+        <button class="btn" onclick="openAuth('register')">Criar conta</button>
+        <button class="btn" onclick="openAuth('login')">Fazer login</button>
+      </div>
+
+      <div style="margin-top:18px;color:var(--muted);display:inline-flex;gap:12px;align-items:center">
+        <div class="status"><span class="dot online" id="server-dot"></span><span id="server-status">Online</span></div>
+        <div id="player-count">23 jogadores</div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <h2 style="margin-top:0">Recursos</h2>
+      <div class="grid">
+        <div class="card"><h3>Minigames</h3><p class="muted">BedWars, SkyWars, The Bridge e mais.</p></div>
+        <div class="card"><h3>Economia</h3><p class="muted">Sistema econômico com lojas e comandos.</p></div>
+        <div class="card"><h3>Suporte 24/7</h3><p class="muted">Equipe ativa no Discord.</p></div>
+      </div>
+    </section>
+
+    <section id="regras" class="section" style="background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)">
+      <h2>Regras rápidas</h2>
+      <ul style="color:var(--muted)">
+        <li>Respeite outros jogadores.</li>
+        <li>Sem trapaças ou hacks.</li>
+        <li>Não explore glitches.</li>
+        <li>Siga as instruções da staff.</li>
+        <li>Qualquer descumprimento das regras resultará em banimento.</li>
+      </ul>
+    </section>
+
+    <section id="staff" class="section">
+      <h2>Equipe</h2>
+      <div class="grid">
+        <div class="card"><strong>Admin</strong><div style="color:var(--muted);font-size:13px">Mpzin22 & Vexinthishit</div></div>
+        <div class="card"><strong>Moderador</strong><div style="color:var(--muted);font-size:13px">Mpzin22 & Vexinthishit</div></div>
+        <div class="card"><strong>Suporte</strong><div style="color:var(--muted);font-size:13px">Mpzin22 & Vexinthishit</div></div>
+      </div>
+    </section>
+
+    <section id="loja" class="section">
+      <h2>Loja de VIPs</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="https://via.placeholder.com/80x80.png?text=Bronze" alt="VIP Bronze" class="vip-img" />
+          <h3>VIP Bronze</h3>
+          <p>Indisponível</p>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/80x80.png?text=Prata" alt="VIP Prata" class="vip-img" />
+          <h3>VIP Prata</h3>
+          <p>Indisponível</p>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/80x80.png?text=Ouro" alt="VIP Ouro" class="vip-img" />
+          <h3>VIP Ouro</h3>
+          <p>Indisponível</p>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/80x80.png?text=Diamante" alt="VIP Diamante" class="vip-img" />
+          <h3>VIP Diamante</h3>
+          <p>Indisponível</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="join" class="section">
+      <h2>Como entrar</h2>
+      <ol style="color:var(--muted)">
+        <li>Abrir Minecraft Java edition.</li>
+        <li>Clique em "Multiplayer".</li>
+        <li>Adicionar servidor com o IP: <strong>Revenge.net</strong>.</li>
+        <li>Entrar e aproveitar.</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Modal de Autenticação -->
+  <dialog class="modal" id="authModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <strong id="authTitle">Acessar sua conta</strong>
+        <div class="tabs">
+          <button class="tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
+          <button class="tab" id="tab-register" onclick="switchAuthTab('register')">Registrar</button>
+          <button class="tab" onclick="closeAuth()">Fechar</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form id="form-login" onsubmit="submitLogin(event)" autocomplete="on">
+          <div class="field">
+            <label for="login-username">Usuário ou e-mail</label>
+            <input id="login-username" name="username" required>
+          </div>
+          <div class="field">
+            <label for="login-password">Senha</label>
+            <input id="login-password" name="password" type="password" required>
+          </div>
+          <div class="actions">
+            <span class="helper">Use sua conta Revenge.</span>
+            <button class="btn" type="submit">Entrar</button>
+          </div>
+        </form>
+
+        <form id="form-register" onsubmit="submitRegister(event)" style="display:none" autocomplete="on">
+          <div class="field">
+            <label for="reg-username">Usuário</label>
+            <input id="reg-username" name="username" minlength="3" required>
+          </div>
+          <div class="field">
+            <label for="reg-email">E-mail</label>
+            <div class="row">
+              <input id="reg-email" name="email" type="email" required style="flex:1">
+              <button type="button" class="btn" onclick="sendVerificationCode()">Enviar código</button>
+            </div>
+            <div class="row">
+              <input id="reg-email-code" placeholder="Código de verificação" style="flex:1">
+              <button type="button" class="btn" onclick="verifyEmailCode()">Verificar</button>
+            </div>
+            <span class="helper" id="emailStatus">Precisamos verificar seu e-mail.</span>
+          </div>
+          <div class="field">
+            <label for="reg-birthdate">Data de nascimento</label>
+            <input id="reg-birthdate" name="birthdate" type="date" required>
+          </div>
+          <div class="field">
+            <label for="reg-password">Senha</label>
+            <input id="reg-password" name="password" type="password" minlength="6" required>
+          </div>
+          <div class="actions">
+            <span class="helper">Criaremos sua conta para o site.</span>
+            <button class="btn" type="submit">Registrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Modal de Perfil -->
+  <dialog class="modal" id="profileModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <strong>Editar perfil</strong>
+        <div class="tabs">
+          <button class="tab" onclick="closeProfile()">Fechar</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form id="form-profile" onsubmit="submitProfile(event)">
+          <div class="field">
+            <label>Avatar</label>
+            <input id="profile-avatar" type="file" accept="image/*" />
+            <span class="helper">Imagem quadrada recomendada. Será exibida no topo.</span>
+          </div>
+          <div class="field">
+            <label for="profile-displayname">Nome de exibição</label>
+            <input id="profile-displayname" minlength="2" placeholder="ex.: Isa" />
+          </div>
+          <div class="actions">
+            <span class="helper">Suas mudanças ficam salvas neste navegador.</span>
+            <button class="btn" type="submit">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <footer>
+    <div>© Revenge • IP: Revenge.net</div>
+    <div style="margin-top:8px;color:var(--muted)">Site desenvolvido por uma equipe de duas pessoas e estamos cada vez melhorando.</div>
+  </footer>
+
+  <script>
+    function copyIP(){
+      navigator.clipboard?.writeText('Revenge.net').then(()=>{alert('IP copiado: Revenge.net')}).catch(()=>{prompt('Copie o IP manualmente', 'Revenge.net')});
+    }
+    (function(){
+      const online=true;
+      document.getElementById('server-dot').className='dot '+(online?'online':'offline');
+      document.getElementById('server-status').textContent=online?'Online':'Offline';
+      document.getElementById('player-count').textContent=online?'23 jogadores':'0 jogadores';
+    })();
+
+    // ======= Sessão e navegação =======
+    function getUser(username){
+      const raw=localStorage.getItem('rev_users_'+username);
+      return raw?JSON.parse(raw):null;
+    }
+    function getSession(){return localStorage.getItem('rev_session')}
+    function setSession(u){localStorage.setItem('rev_session',u)}
+    function clearSession(){localStorage.removeItem('rev_session')}
+
+    function renderNavFromSession(){
+      const nav=document.getElementById('nav-auth');
+      const session=getSession();
+      nav.innerHTML='<a href="#features">Recursos</a><a href="#regras">Regras</a><a href="#staff">Staff</a><a href="#loja">Loja</a>';
+      if(!session){
+        const loginBtn=document.createElement('button');loginBtn.textContent='Entrar';loginBtn.onclick=()=>openAuth('login');
+        const regBtn=document.createElement('button');regBtn.className='btn';regBtn.textContent='Registrar';regBtn.onclick=()=>openAuth('register');
+        nav.appendChild(loginBtn);nav.appendChild(regBtn);
+        document.getElementById('hero-cta').style.display='flex';
+        return;
+      }
+      const user=getUser(session); if(!user){clearSession(); return renderNavFromSession();}
+      const displayName=user.displayName||user.username;
+      const box=document.createElement('div'); box.className='userbox';
+      const img=document.createElement('img'); img.className='avatar'; img.alt='avatar'; img.src=user.avatarDataUrl||'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHZpZXdCb3g9IjAgMCAzNiAzNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxOCIgY3k9IjEzIiByPSI2IiBmaWxsPSIjNDQ0Ii8+PHBhdGggZD0iTTkgMzEuNWMwLTUuNSA1LTEwIDEwLTEwczEwIDQuNSAxMCAxMFoiIGZpbGw9IiM0NDQiLz48L3N2Zz4=';
+      const name=document.createElement('span'); name.textContent=displayName;
+      const edit=document.createElement('button'); edit.textContent='Editar perfil'; edit.onclick=openProfile;
+      const out=document.createElement('button'); out.textContent='Sair'; out.onclick=()=>{clearSession(); renderNavFromSession(); alert('Você saiu.');};
+      box.appendChild(img); box.appendChild(name); nav.appendChild(box); nav.appendChild(edit); nav.appendChild(out);
+      document.getElementById('hero-cta').style.display='none';
+    }
+    document.addEventListener('DOMContentLoaded', renderNavFromSession);
+
+    // ======= Auth modal =======
+    const authModal=document.getElementById('authModal');
+    function openAuth(mode='login'){switchAuthTab(mode);authModal.setAttribute('open','');}
+    function closeAuth(){authModal.removeAttribute('open');}
+    function switchAuthTab(mode){
+      document.getElementById('tab-login').classList.toggle('active',mode==='login');
+      document.getElementById('tab-register').classList.toggle('active',mode==='register');
+      document.getElementById('form-login').style.display= mode==='login'?'block':'none';
+      document.getElementById('form-register').style.display= mode==='register'?'block':'none';
+      document.getElementById('authTitle').textContent= mode==='login'?'Acessar sua conta':'Criar conta';
+    }
+
+    // ======= Verificação de e-mail (front DEMO) =======
+    function sendVerificationCode(){
+      const email=document.getElementById('reg-email').value.trim();
+      const status=document.getElementById('emailStatus');
+      if(!email){alert('Informe o e-mail.');return}
+      const code=(Math.floor(100000+Math.random()*900000)).toString();
+      localStorage.setItem('rev_email_code_'+email, JSON.stringify({code, ts:Date.now()}));
+      alert('Código de verificação (DEMO): '+code+'\nIntegre um serviço de e-mail para envio real.');
+      status.textContent='Código gerado. Verifique seu e-mail e digite abaixo.';
+    }
+    function verifyEmailCode(){
+      const email=document.getElementById('reg-email').value.trim();
+      const input=document.getElementById('reg-email-code').value.trim();
+      const status=document.getElementById('emailStatus');
+      const raw=localStorage.getItem('rev_email_code_'+email);
+      if(!raw){alert('Envie o código primeiro.');return}
+      try{
+        const {code, ts}=JSON.parse(raw);
+        const ok = input===code && (Date.now()-ts) < 15*60*1000; // 15 min
+        if(ok){
+          localStorage.setItem('rev_email_verified_'+email,'1');
+          status.textContent='E-mail verificado ✅';
+        } else {
+          status.textContent='Código inválido ou expirado.';
+        }
+      }catch(e){status.textContent='Erro ao validar código.'}
+    }
+
+    function submitLogin(e){
+      e.preventDefault();
+      const u=document.getElementById('login-username').value.trim();
+      const p=document.getElementById('login-password').value;
+      const raw=localStorage.getItem('rev_users_'+u) || localStorage.getItem('rev_users_'+(u||'').toLowerCase());
+      if(!raw){alert('Conta não encontrada');return}
+      const user=JSON.parse(raw);
+      if(user.password!==p){alert('Senha incorreta');return}
+      setSession(user.username);
+      alert('Login efetuado. Bem-vindo, '+(user.displayName||user.username));
+      closeAuth();
+      renderNavFromSession();
+    }
+
+    function submitRegister(e){
+      e.preventDefault();
+      const u=document.getElementById('reg-username').value.trim();
+      const em=document.getElementById('reg-email').value.trim();
+      const bd=document.getElementById('reg-birthdate').value;
+      const p=document.getElementById('reg-password').value;
+      const verified = localStorage.getItem('rev_email_verified_'+em)==='1';
+      if(!verified){alert('Verifique seu e-mail antes de registrar.');return}
+      if(localStorage.getItem('rev_users_'+u)){alert('Usuário já existe');return}
+      const user={username:u,email:em,password:p,birthdate:bd,created:Date.now(),displayName:u,avatarDataUrl:'',emailVerified:true};
+      localStorage.setItem('rev_users_'+u, JSON.stringify(user));
+      localStorage.removeItem('rev_email_verified_'+em);
+      localStorage.removeItem('rev_email_code_'+em);
+      alert('Conta criada. Você já pode entrar.');
+      switchAuthTab('login');
+    }
+
+    // ======= Perfil =======
+    const profileModal=document.getElementById('profileModal');
+    function openProfile(){
+      const session=getSession(); if(!session){return openAuth('login')}
+      const user=getUser(session); if(!user){return openAuth('login')}
+      document.getElementById('profile-displayname').value=user.displayName||user.username;
+      profileModal.setAttribute('open','');
+    }
+    function closeProfile(){profileModal.removeAttribute('open');}
+
+    function submitProfile(e){
+      e.preventDefault();
+      const session=getSession(); if(!session){return}
+      const user=getUser(session); if(!user){return}
+      const dn=document.getElementById('profile-displayname').value.trim();
+      const file=document.getElementById('profile-avatar').files[0];
+      function save(u){ localStorage.setItem('rev_users_'+session, JSON.stringify(u)); renderNavFromSession(); closeProfile(); alert('Perfil atualizado.'); }
+      user.displayName= dn || user.username;
+      if(!file){ return save(user); }
+      const reader=new FileReader();
+      reader.onload = ()=>{ user.avatarDataUrl=reader.result; save(user); };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
